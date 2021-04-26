@@ -1,9 +1,14 @@
+from .api_connection import ApiConnection
+
+
 class CarbonAPI:
     def __init__(self):
-        pass
+        self.api = ApiConnection("https://api.carbonintensity.org.uk/")
 
     async def current_national_intensity(self):
-        return False
+        json = await self.api.get("intensity")
+        intensity = json['data'][0]['intensity']
+        return intensity['actual'], intensity['index']
 
     async def current_postcode_intensity(self):
         return False
