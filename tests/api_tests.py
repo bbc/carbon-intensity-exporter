@@ -21,8 +21,10 @@ class TestCarbonAPI(TestCase):
             self.assertEqual(result, (170, 'moderate'))
 
     async def test_current_region_intensity(self):
-        result = await self.carbon.current_region_intensity(3)
-        self.assertTrue(result)
+        data = {'data': [{'data': [{'intensity': {'forecast': 170, 'index': 'moderate'}}]}]}
+        with mock.patch.object(ApiConnection, "get", return_value=data):
+            result = await self.carbon.current_region_intensity(3)
+            self.assertEqual(result, (170, 'moderate'))
 
     async def test_current_national_mix(self):
         result = await self.carbon.current_national_mix()

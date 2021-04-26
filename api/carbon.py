@@ -10,8 +10,13 @@ class CarbonAPI:
         intensity = json['data'][0]['intensity']
         return intensity['actual'], intensity['index']
 
+    """
+    https://carbon-intensity.github.io/api-definitions/?shell#region-list
+    """
     async def current_region_intensity(self, region_id):
-        return False
+        json = await self.api.get(f"regional/regionid/{region_id}")
+        intensity = json['data'][0]['data'][0]['intensity']
+        return intensity['forecast'], intensity['index']
 
     async def current_national_mix(self):
         return False
