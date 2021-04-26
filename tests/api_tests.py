@@ -33,8 +33,10 @@ class TestCarbonAPI(TestCase):
             self.assertEqual(result, {'biomass': 3.6, 'coal': 0.4})
 
     async def test_current_region_mix(self):
-        result = await self.carbon.current_region_mix()
-        self.assertTrue(result)
+        data = {'data': [{'data': [{'generationmix': [{"fuel": "biomass", "perc": 3.6}, {"fuel": "coal", "perc": 0.4}]}]}]}
+        with mock.patch.object(ApiConnection, "get", return_value=data):
+            result = await self.carbon.current_region_mix(3)
+            self.assertEqual(result, {'biomass': 3.6, 'coal': 0.4})
 
     async def test_national_forecast(self):
         result = await self.carbon.national_forecast()
