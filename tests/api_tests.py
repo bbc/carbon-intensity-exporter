@@ -1,5 +1,6 @@
-from asynctest import TestCase
+from asynctest import TestCase, mock, CoroutineMock
 from api.carbon import CarbonAPI
+from api.api_connection import ApiConnection
 
 
 class TestCarbonAPI(TestCase):
@@ -14,8 +15,10 @@ class TestCarbonAPI(TestCase):
         pass
 
     async def test_current_national_intensity(self):
-        result = await self.carbon.current_national_intensity()
-        self.assertTrue(result)
+        data = {'data': [{'intensity': {'actual': 170, 'index': 'moderate'}}]}
+        with mock.patch.object(ApiConnection, "get", return_value=data):
+            result = await self.carbon.current_national_intensity()
+            self.assertEqual(result, (170, 'moderate'))
 
     async def test_current_postcode_intensity(self):
         result = await self.carbon.current_postcode_intensity()
