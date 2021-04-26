@@ -19,7 +19,9 @@ class CarbonAPI:
         return intensity['forecast'], intensity['index']
 
     async def current_national_mix(self):
-        return False
+        json = await self.api.get(f"generation")
+        mix_list = json['data']['generationmix']
+        return {mix['fuel']: mix['perc'] for mix in mix_list}
 
     async def current_region_mix(self):
         return False
