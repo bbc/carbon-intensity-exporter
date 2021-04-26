@@ -10,17 +10,17 @@ class CarbonAPI:
         intensity = json['data'][0]['intensity']
         return intensity['actual'], intensity['index']
 
-    async def current_postcode_intensity(self):
+    async def current_region_intensity(self, region_id):
         return False
 
     async def current_national_mix(self):
         return False
 
-    async def current_postcode_mix(self):
+    async def current_region_mix(self):
         return False
 
     async def national_forecast(self):
         return False
 
-    async def postcode_forecast(self):
+    async def region_forecast(self):
         return False

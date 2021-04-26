@@ -20,22 +20,22 @@ class TestCarbonAPI(TestCase):
             result = await self.carbon.current_national_intensity()
             self.assertEqual(result, (170, 'moderate'))
 
-    async def test_current_postcode_intensity(self):
-        result = await self.carbon.current_postcode_intensity()
+    async def test_current_region_intensity(self):
+        result = await self.carbon.current_region_intensity(3)
         self.assertTrue(result)
 
     async def test_current_national_mix(self):
         result = await self.carbon.current_national_mix()
         self.assertTrue(result)
 
-    async def test_current_postcode_mix(self):
-        result = await self.carbon.current_postcode_mix()
+    async def test_current_region_mix(self):
+        result = await self.carbon.current_region_mix()
         self.assertTrue(result)
 
     async def test_national_forecast(self):
         result = await self.carbon.national_forecast()
         self.assertTrue(result)
 
-    async def test_postcode_forecast(self):
-        result = await self.carbon.postcode_forecast()
+    async def test_region_forecast(self):
+        result = await self.carbon.region_forecast()
         self.assertTrue(result)
