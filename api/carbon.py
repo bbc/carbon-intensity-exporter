@@ -1,4 +1,5 @@
 from .api_connection import ApiConnection
+from datetime import datetime
 
 
 class CarbonAPI:
@@ -28,8 +29,33 @@ class CarbonAPI:
         mix_list = json['data'][0]['data'][0]['generationmix']
         return {mix['fuel']: mix['perc'] for mix in mix_list}
 
-    async def national_forecast(self):
-        return False
+    async def national_forecast_single(self, hours):
+        time_now = datetime.utcnow()
+        # reformat to yyyy-mm-ddThh:mm:ss+0000 to fit API call
+        time_now = str(time_now).replace(" ", 'T')
+        time_now = time_now[:-7] + "+0000"
+        json = await self.api.get(f"intensity/{time_now}/fw48h")
+        # endpoint returns half hourly predictions from current half hour rounded
+        # so index 2n gives n hours from now. Max time is therefore 47.5 hours
+        index = int(hours*2) if hours < 48 else 95
+        prediction = json['data'][index]['intensity']
+        return prediction['forecast'], prediction['index']
+
+    async def national_forecast_range(self, hours):
+        time_now = datetime.utcnow()
+        # reformat to yyyy-mm-ddThh:mm:ss+0000 to fit API call
+        time_now = str(time_now).replace(" ", 'T')
+        time_now = time_now[:-7] + "+0000"
+        json = await self.api.get(f"intensity/{time_now}/fw48h")
+        # endpoint returns half hourly predictions from current half hour rounded
+        index = int(hours*2) if hours < 48 else 95
+        forecasts = json['data'][0: index]
+        predictions = []
+        for f in forecasts:
+            predictions.append({"time": f['from'],
+                                "forecast": f["intensity"]["forecast"],
+                                "index": f["intensity"]["index"]})
+        return predictions
 
     async def region_forecast(self):
         return False
