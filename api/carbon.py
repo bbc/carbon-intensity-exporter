@@ -6,6 +6,13 @@ class CarbonAPI:
     def __init__(self):
         self.api = ApiConnection("https://api.carbonintensity.org.uk/")
 
+    @staticmethod
+    def _get_api_time_format():
+        time_now = datetime.utcnow()
+        # reformat to yyyy-mm-ddThh:mm:ss+0000 to fit API call
+        time_now = str(time_now).replace(" ", 'T')
+        return time_now[:-7] + "+0000"
+
     async def current_national_intensity(self):
         json = await self.api.get("intensity")
         intensity = json['data'][0]['intensity']
@@ -30,11 +37,7 @@ class CarbonAPI:
         return {mix['fuel']: mix['perc'] for mix in mix_list}
 
     async def national_forecast_single(self, hours):
-        time_now = datetime.utcnow()
-        # reformat to yyyy-mm-ddThh:mm:ss+0000 to fit API call
-        time_now = str(time_now).replace(" ", 'T')
-        time_now = time_now[:-7] + "+0000"
-        json = await self.api.get(f"intensity/{time_now}/fw48h")
+        json = await self.api.get(f"intensity/{self._get_api_time_format()}/fw48h")
         # endpoint returns half hourly predictions from current half hour rounded
         # so index 2n gives n hours from now. Max time is therefore 47.5 hours
         index = int(hours*2) if hours < 48 else 95
@@ -42,11 +45,7 @@ class CarbonAPI:
         return prediction['forecast'], prediction['index']
 
     async def national_forecast_range(self, hours):
-        time_now = datetime.utcnow()
-        # reformat to yyyy-mm-ddThh:mm:ss+0000 to fit API call
-        time_now = str(time_now).replace(" ", 'T')
-        time_now = time_now[:-7] + "+0000"
-        json = await self.api.get(f"intensity/{time_now}/fw48h")
+        json = await self.api.get(f"intensity/{self._get_api_time_format()}/fw48h")
         # endpoint returns half hourly predictions from current half hour rounded
         index = int(hours*2) if hours < 48 else 95
         forecasts = json['data'][0: index]
@@ -57,5 +56,19 @@ class CarbonAPI:
                                 "index": f["intensity"]["index"]})
         return predictions
 
-    async def region_forecast(self):
-        return False
+    async def region_forecast_single(self, region_id, hours):
+        json = await self.api.get(f"regional/intensity/{self._get_api_time_format()}/fw48h/regionid/{region_id}")
+        index = int(hours*2) if hours < 48 else 95
+        prediction = json['data']['data'][index]['intensity']
+        return prediction['forecast'], prediction['index']
+
+    async def region_forecast_range(self, region_id, hours):
+        json = await self.api.get(f"regional/intensity/{self._get_api_time_format()}/fw48h/regionid/{region_id}")
+        index = int(hours*2) if hours < 48 else 95
+        forecasts = json['data']['data'][0: index]
+        predictions = []
+        for f in forecasts:
+            predictions.append({"time": f['from'],
+                                "forecast": f["intensity"]["forecast"],
+                                "index": f["intensity"]["index"]})
+        return predictions
