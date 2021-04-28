@@ -24,5 +24,14 @@ class Minimiser:
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
         return optimal_times
 
-    def optimal_time_and_location(self, locations):
-        return True
+    async def optimal_time_and_location(self, locations, num_options=1):
+        options = []
+        for location in locations:
+            times = await self.api.region_forecast_range(location_ids[location], 48)
+            for time in times:
+                # results don't come back with location attached
+                time['location'] = location
+            options = options + times
+        sorted_options = sorted(options, key=lambda x: x['forecast'])
+        optimal_options = [(opt['location'], opt['time']) for opt in sorted_options[0:num_options]]
+        return optimal_options
