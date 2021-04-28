@@ -5,9 +5,6 @@ import asyncio
 import time
 from datetime import datetime
 
-LONDON = 13
-NW_ENGLAND = 3
-
 
 class Prometheus:
     def __init__(self):
@@ -36,12 +33,12 @@ class Prometheus:
 
     def collect(self):
         api_calls = {
-            "lon_int": self.api.current_region_intensity(LONDON),
-            "man_int": self.api.current_region_intensity(NW_ENGLAND),
-            "lon_mix": self.api.current_region_mix(LONDON),
-            "man_mix": self.api.current_region_mix(NW_ENGLAND),
-            "lon_forecast": self.api.region_forecast_range(LONDON, 12),
-            "man_forecast": self.api.region_forecast_range(NW_ENGLAND, 12)
+            "lon_int": self.api.current_region_intensity("LONDON"),
+            "man_int": self.api.current_region_intensity("NW_ENGLAND"),
+            "lon_mix": self.api.current_region_mix("LONDON"),
+            "man_mix": self.api.current_region_mix("NW_ENGLAND"),
+            "lon_forecast": self.api.region_forecast_range("LONDON", 12),
+            "man_forecast": self.api.region_forecast_range("NW_ENGLAND", 12)
         }
 
         results = {}
