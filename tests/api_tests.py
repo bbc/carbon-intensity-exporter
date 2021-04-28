@@ -23,7 +23,7 @@ class TestCarbonAPI(TestCase):
     async def test_current_region_intensity(self):
         data = {'data': [{'data': [{'intensity': {'forecast': 170, 'index': 'moderate'}}]}]}
         with mock.patch.object(ApiConnection, "get", return_value=data):
-            result = await self.carbon.current_region_intensity(3)
+            result = await self.carbon.current_region_intensity("LONDON")
             self.assertEqual(result, (170, 'moderate'))
 
     async def test_current_national_mix(self):
@@ -35,7 +35,7 @@ class TestCarbonAPI(TestCase):
     async def test_current_region_mix(self):
         data = {'data': [{'data': [{'generationmix': [{"fuel": "biomass", "perc": 3.6}, {"fuel": "coal", "perc": 0.4}]}]}]}
         with mock.patch.object(ApiConnection, "get", return_value=data):
-            result = await self.carbon.current_region_mix(3)
+            result = await self.carbon.current_region_mix("LONDON")
             self.assertEqual(result, {'biomass': 3.6, 'coal': 0.4})
 
     async def test_national_forecast_single(self):
@@ -71,7 +71,7 @@ class TestCarbonAPI(TestCase):
                                   {'intensity': {'forecast': 218, 'index': 'moderate'}},
                                   {'intensity': {'forecast': 214, 'index': 'moderate'}}]}}
         with mock.patch.object(ApiConnection, "get", return_value=data):
-            result = await self.carbon.region_forecast_single(region_id=3, hours=1.5)
+            result = await self.carbon.region_forecast_single(region="LONDON", hours=1.5)
             self.assertEqual(result, (218, 'moderate'))
 
     async def test_region_forecast_range(self):
@@ -82,7 +82,7 @@ class TestCarbonAPI(TestCase):
                                   {'from': '2021-04-27T10:30Z', 'intensity': {'forecast': 218, 'index': 'moderate'}},
                                   {'from': '2021-04-27T11:00Z', 'intensity': {'forecast': 214, 'index': 'moderate'}}]}}
         with mock.patch.object(ApiConnection, "get", return_value=data):
-            result = await self.carbon.region_forecast_range(region_id=3, hours=1.5)
+            result = await self.carbon.region_forecast_range(region="LONDON", hours=1.5)
             expected = [{'forecast': 233, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
                         {'forecast': 231, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
                         {'forecast': 223, 'index': 'moderate', 'time': '2021-04-27T09:30Z'}]

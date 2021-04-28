@@ -1,6 +1,12 @@
 from .api_connection import ApiConnection
 from datetime import datetime
 
+REGIONS = {
+    'N_SCOTLAND': 1, 'S_SCOTLAND': 2, 'NW_ENGLAND': 3, 'NE_ENGLAND': 4, 'YORKSHIRE': 5, 'N_WALES': 6, 'S_WALES': 7,
+    'W_MIDLANDS': 8, 'E_MIDLANDS': 9, 'E_ENGLAND': 10, 'SW_ENGLAND': 11, 'S_ENGLAND': 12, 'LONDON': 13,
+    'SE_ENGLAND': 14, 'ENGLAND': 15, 'SCOTLAND': 16, 'WALES': 17
+}
+
 
 class CarbonAPI:
     def __init__(self):
@@ -16,12 +22,11 @@ class CarbonAPI:
         return intensity['actual'], intensity['index']
 
     """
-    region_id: https://carbon-intensity.github.io/api-definitions/?shell#region-list
     Returns a tuple of the estimated current carbon intensity for the region,
     along with a descriptor of intensity from very low -> very high
     """
-    async def current_region_intensity(self, region_id):
-        json = await self.api.get(f"regional/regionid/{region_id}")
+    async def current_region_intensity(self, region):
+        json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
         intensity = json['data'][0]['data'][0]['intensity']
         return intensity['forecast'], intensity['index']
 
@@ -34,11 +39,10 @@ class CarbonAPI:
         return {mix['fuel']: mix['perc'] for mix in mix_list}
 
     """
-    region_id: https://carbon-intensity.github.io/api-definitions/?shell#region-list
     Returns a dict of fuel types and percentages, which represent the current regional fuel mix
     """
-    async def current_region_mix(self, region_id):
-        json = await self.api.get(f"regional/regionid/{region_id}")
+    async def current_region_mix(self, region):
+        json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
         mix_list = json['data'][0]['data'][0]['generationmix']
         return {mix['fuel']: mix['perc'] for mix in mix_list}
 
@@ -73,25 +77,23 @@ class CarbonAPI:
         return predictions
 
     """
-    region_id: https://carbon-intensity.github.io/api-definitions/?shell#region-list
     hours: int or float, should be less than 47.5
     Given a number of hours, returns the predicted regional carbon intensity that many hours from now (rounded
     down to the nearest half hour)
     """
-    async def region_forecast_single(self, region_id, hours):
-        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{region_id}")
+    async def region_forecast_single(self, region, hours):
+        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
         index = int(hours*2) if hours < 48 else 95
         prediction = json['data']['data'][index]['intensity']
         return prediction['forecast'], prediction['index']
 
     """
-    region_id: https://carbon-intensity.github.io/api-definitions/?shell#region-list
     hours: int or float, should be less than 47.5
     Given a number of hours, returns the predicted national carbon intensity at each half hour between now (rounded down
     to the nearest half hour) and that many hours from now
     """
-    async def region_forecast_range(self, region_id, hours):
-        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{region_id}")
+    async def region_forecast_range(self, region, hours):
+        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
         index = int(hours*2) if hours < 48 else 95
         forecasts = json['data']['data'][0: index]
         predictions = []
