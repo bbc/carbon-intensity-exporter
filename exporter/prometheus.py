@@ -12,15 +12,18 @@ NW_ENGLAND = 3
 class Prometheus:
     def __init__(self):
         self.gauges = {
+            'up': GaugeMetricFamily('up',
+                                    'Collector Status',
+                                    labels=["job"]),
             'intensity': GaugeMetricFamily('intensity',
                                            'Carbon Intensity',
-                                           labels=["timestamp", "location"]),
+                                           labels=["location"]),
             'fuel_mix': GaugeMetricFamily('fuel_mix',
                                           'Current Fuel Mix',
-                                          labels=["timestamp", "location", "fuel_type"]),
+                                          labels=["location", "fuel_type"]),
             'forecast': GaugeMetricFamily('intensity_forecast',
                                           'Current Fuel Mix',
-                                          labels=["timestamp", "location", "time"])
+                                          labels=["location", "time"])
         }
         self.api = CarbonAPI()
 
@@ -48,21 +51,25 @@ class Prometheus:
 
         timestamp = str(datetime.now().timestamp())
 
-        self.gauges['intensity'].add_metric(labels=[timestamp, "london"], value=results['lon_int'][0])
-        self.gauges['intensity'].add_metric(labels=[timestamp, "manchester"], value=results['man_int'][0])
+        self.gauges['up'].add_metric(labels=["Carbon API Collector"], value=1)
+
+        self.gauges['intensity'].add_metric(labels=["london"], timestamp=timestamp, value=results['lon_int'][0])
+        self.gauges['intensity'].add_metric(labels=["manchester"], timestamp=timestamp, value=results['man_int'][0])
 
         for fuel, percent in results['lon_mix'].items():
-            self.gauges['fuel_mix'].add_metric(labels=[timestamp, "london", fuel], value=percent)
+            self.gauges['fuel_mix'].add_metric(labels=["london", fuel], timestamp=timestamp, value=percent)
         for fuel, percent in results['man_mix'].items():
-            self.gauges['fuel_mix'].add_metric(labels=[timestamp, "manchester", fuel], value=percent)
+            self.gauges['fuel_mix'].add_metric(labels=["manchester", fuel], timestamp=timestamp, value=percent)
 
         for forecast in results['lon_forecast']:
-            self.gauges['forecast'].add_metric(labels=[timestamp, "london",
+            self.gauges['forecast'].add_metric(labels=["london",
                                                forecast['time']],
+                                               timestamp=timestamp,
                                                value=forecast['forecast'])
         for forecast in results['man_forecast']:
-            self.gauges['forecast'].add_metric(labels=[timestamp, "manchester",
+            self.gauges['forecast'].add_metric(labels=["manchester",
                                                forecast['time']],
+                                               timestamp=timestamp,
                                                value=forecast['forecast'])
 
         for name, gauge in self.gauges.items():
