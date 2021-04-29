@@ -9,7 +9,10 @@ class TestCarbonMinimiser(TestCase):
         cls.min = Minimiser()
 
     async def test_optimal_location_now(self):
-        pass
+        data = [(231, 'moderate'), (131, 'moderate'), (331, 'moderate')]
+        with mock.patch.object(CarbonAPI, "current_region_intensity", side_effect=data):
+            result = await self.min.optimal_location_now(["a", "b", "c"])
+            self.assertEqual(result, "b")
 
     async def test_optimal_time_for_location(self):
         data = [{'forecast': 231, 'index': 'moderate', 'time': '+00:30'},
