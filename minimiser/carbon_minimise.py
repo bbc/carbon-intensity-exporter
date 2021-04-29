@@ -32,7 +32,7 @@ class Minimiser:
         times = await self.api.region_forecast_range(location, 48)
         sorted_times = sorted(times, key=lambda x: x['forecast'])
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
-        return optimal_times
+        return optimal_times[0] if len(optimal_times) == 1 else optimal_times
 
     async def optimal_time_and_location(self, locations, num_options=1):
         options = []
@@ -44,7 +44,7 @@ class Minimiser:
             options = options + times
         sorted_options = sorted(options, key=lambda x: x['forecast'])
         optimal_options = [(opt['location'], opt['time']) for opt in sorted_options[0:num_options]]
-        return optimal_options
+        return optimal_options[0] if len(optimal_options) == 1 else optimal_options
 
     async def optimal_time_window_for_location(self, location, window_len, num_options=1):
         times = await self.api.region_forecast_range(location, 48)
@@ -55,4 +55,4 @@ class Minimiser:
             costs.append(cost)
         sorted_times = sorted(costs, key=lambda x: x['cost'])
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
-        return optimal_times
+        return optimal_times[0] if len(optimal_times) == 1 else optimal_times
