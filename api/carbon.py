@@ -26,6 +26,13 @@ class CarbonAPI:
         return f"+{hours}:{minutes}"
 
     """
+    Returns 1 if 200 response received from API root, else 0
+    """
+    async def health_status(self):
+        response = await self.api.status()
+        return 1 if response == 200 else 0
+
+    """
     Returns a tuple of the combined average intensity for England, Scotland, and Wales
     along with a descriptor of intensity from very low -> very high
     """
