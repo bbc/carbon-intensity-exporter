@@ -2,7 +2,7 @@ aiohttp==3.7.4.post0
 async-timeout==3.0.1
 asynctest==0.13.0
 attrs==20.3.0
-chardet==4.0.0
+chardet
 idna==3.1
 multidict==5.1.0
 prometheus-client==0.10.1
