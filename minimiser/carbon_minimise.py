@@ -1,12 +1,14 @@
 from api.carbon import CarbonAPI
 from itertools import islice
+from typing import List
 
 
 class Minimiser:
     def __init__(self):
         self.api = CarbonAPI()
 
-    def _window(self, seq, n):
+    @staticmethod
+    def _window(seq: List, n: int):
         """
         :return: Returns a sliding window (of width n) over data from the iterable
         s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...
@@ -20,7 +22,7 @@ class Minimiser:
             result = result[1:] + (elem,)
             yield result
 
-    async def optimal_location_now(self, locations):
+    async def optimal_location_now(self, locations: List[str]):
         """
         Given a list of locations, returns the location with lowest carbon intensity right now
         :param locations: list of locations, see api.carbon.REGIONS
@@ -33,7 +35,7 @@ class Minimiser:
         sorted_options = sorted(options, key=options.get)
         return sorted_options[0]
 
-    async def optimal_time_for_location(self, location, num_options=1):
+    async def optimal_time_for_location(self, location: str, num_options: int = 1):
         """
         Given a location, returns the lowest carbon intensity half hour within the next 48 hours
         :param location: location string, see api.carbon.REGIONS
@@ -45,7 +47,7 @@ class Minimiser:
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
         return optimal_times[0] if len(optimal_times) == 1 else optimal_times
 
-    async def optimal_time_and_location(self, locations, num_options=1):
+    async def optimal_time_and_location(self, locations: List[str], num_options: int = 1):
         """
         Given a list of locations, returns the time and location of the lowest carbon
         intensity half hour window over the next 48 hours
@@ -64,7 +66,7 @@ class Minimiser:
         optimal_options = [(opt['location'], opt['time']) for opt in sorted_options[0:num_options]]
         return optimal_options[0] if len(optimal_options) == 1 else optimal_options
 
-    async def optimal_time_window_for_location(self, location, window_len, num_options=1):
+    async def optimal_time_window_for_location(self, location: str, window_len: int, num_options: int = 1):
         """
         Given a location and time window, returns the start of the time window with lowest
         carbon intensity over the next 48 hours in that location
@@ -83,7 +85,7 @@ class Minimiser:
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
         return optimal_times[0] if len(optimal_times) == 1 else optimal_times
 
-    async def optimal_time_window_and_location(self, locations, window_len, num_options=1):
+    async def optimal_time_window_and_location(self, locations: List[str], window_len: int, num_options: int = 1):
         """
         Given a list of locations and a time window, returns the location and start of the time window with lowest
         carbon intensity over the next 48 hours
