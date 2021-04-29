@@ -6,7 +6,7 @@ class Minimiser:
     def __init__(self):
         self.api = CarbonAPI()
 
-    def window(self, seq, n):
+    def _window(self, seq, n):
         """
         :return: Returns a sliding window (of width n) over data from the iterable
         s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...
@@ -21,6 +21,11 @@ class Minimiser:
             yield result
 
     async def optimal_location_now(self, locations):
+        """
+        Given a list of locations, returns the location with lowest carbon intensity right now
+        :param locations: list of locations, see api.carbon.REGIONS
+        :return: lowest carbon location (str)
+        """
         options = {}
         for location in locations:
             intensity, _ = await self.api.current_region_intensity(location)
@@ -29,12 +34,25 @@ class Minimiser:
         return sorted_options[0]
 
     async def optimal_time_for_location(self, location, num_options=1):
+        """
+        Given a location, returns the lowest carbon intensity half hour within the next 48 hours
+        :param location: location string, see api.carbon.REGIONS
+        :param num_options: define the number of top options returned
+        :return: number of hours and mins till optimal time as +hh:mm string
+        """
         times = await self.api.region_forecast_range(location, 48)
         sorted_times = sorted(times, key=lambda x: x['forecast'])
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
         return optimal_times[0] if len(optimal_times) == 1 else optimal_times
 
     async def optimal_time_and_location(self, locations, num_options=1):
+        """
+        Given a list of locations, returns the time and location of the lowest carbon
+        intensity half hour window over the next 48 hours
+        :param locations: list of locations, see api.carbon.REGIONS
+        :param num_options: define the number of top options returned
+        :return: tuple of (location, time), where time is num hours until optimal start time in hh:mm
+        """
         options = []
         for location in locations:
             times = await self.api.region_forecast_range(location, 48)
@@ -47,9 +65,17 @@ class Minimiser:
         return optimal_options[0] if len(optimal_options) == 1 else optimal_options
 
     async def optimal_time_window_for_location(self, location, window_len, num_options=1):
+        """
+        Given a location and time window, returns the start of the time window with lowest
+        carbon intensity over the next 48 hours in that location
+        :param location: location string, see api.carbon.REGIONS
+        :param window_len: integer number of hours that you wish to optimise for
+        :param num_options: define the number of top options returned
+        :return: number of hours and mins from now as +hh:mm string
+        """
         times = await self.api.region_forecast_range(location, 48)
         costs = []
-        for window in self.window(times, window_len):
+        for window in self._window(times, window_len):
             carbon_cost = sum([f['forecast'] for f in window])
             cost = {'time': window[0]['time'], 'cost': carbon_cost}
             costs.append(cost)
@@ -58,10 +84,18 @@ class Minimiser:
         return optimal_times[0] if len(optimal_times) == 1 else optimal_times
 
     async def optimal_time_window_and_location(self, locations, window_len, num_options=1):
+        """
+        Given a list of locations and a time window, returns the location and start of the time window with lowest
+        carbon intensity over the next 48 hours
+        :param locations: list of locations, see api.carbon.REGIONS
+        :param window_len: integer number of hours that you wish to optimise for
+        :param num_options: define the number of top options returned
+        :return: tuple of (location, time), where time is num hours until optimal start time in hh:mm
+        """
         costs = []
         for location in locations:
             times = await self.api.region_forecast_range(location, 48)
-            for window in self.window(times, window_len):
+            for window in self._window(times, window_len):
                 carbon_cost = sum([f['forecast'] for f in window])
                 cost = {'location': location, 'time': window[0]['time'], 'cost': carbon_cost}
                 costs.append(cost)
