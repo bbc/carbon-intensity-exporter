@@ -12,6 +12,26 @@ class CarbonAPI:
     def __init__(self):
         self.api = ApiConnection("https://api.carbonintensity.org.uk/")
 
+    @staticmethod
+    def _get_api_time_delta(t1, t2):
+        # convert yyyy-mm-ddThh:mmZ to yyyy-mm-dd:hh:mm for comparison
+        t1 = datetime.strptime(t1, '%Y-%m-%dT%H:%MZ')
+        t2 = datetime.strptime(t2, '%Y-%m-%dT%H:%MZ')
+        diff = t2 - t1
+        seconds = diff.total_seconds()
+        hours = int(seconds // 3600)
+        hours = "0" + str(hours) if hours < 10 else str(hours)  # format to hh
+        minutes = int((seconds % 3600) // 60)
+        minutes = "0" + str(minutes) if minutes < 10 else str(minutes)  # format to mm
+        return f"+{hours}:{minutes}"
+
+    """
+    Returns 1 if 200 response received from API root, else 0
+    """
+    async def health_status(self):
+        response = await self.api.status()
+        return 1 if response == 200 else 0
+
     """
     Returns a tuple of the combined average intensity for England, Scotland, and Wales
     along with a descriptor of intensity from very low -> very high
@@ -60,7 +80,7 @@ class CarbonAPI:
         return prediction['forecast'], prediction['index']
 
     """
-    hours: int or float, should be less than 47.5
+    hours: int or float, max available is 47.5
     Given a number of hours, returns the predicted national carbon intensity at each half hour between now (rounded down
     to the nearest half hour) and that many hours from now 
     """
@@ -68,10 +88,12 @@ class CarbonAPI:
         json = await self.api.get(f"intensity/{datetime.utcnow().isoformat()}/fw48h")
         # endpoint returns half hourly predictions from current half hour rounded
         index = int(hours*2) if hours < 48 else 95
-        forecasts = json['data'][0: index]
+        forecasts = json['data'][0: index + 1]
         predictions = []
+        t0 = forecasts.pop(0)['from']
         for f in forecasts:
-            predictions.append({"time": f['from'],
+            time = self._get_api_time_delta(t0, f['from'])
+            predictions.append({"time": time,
                                 "forecast": f["intensity"]["forecast"],
                                 "index": f["intensity"]["index"]})
         return predictions
@@ -88,17 +110,19 @@ class CarbonAPI:
         return prediction['forecast'], prediction['index']
 
     """
-    hours: int or float, should be less than 47.5
+    hours: int or float, max available is 47.5
     Given a number of hours, returns the predicted national carbon intensity at each half hour between now (rounded down
     to the nearest half hour) and that many hours from now
     """
     async def region_forecast_range(self, region, hours):
         json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
         index = int(hours*2) if hours < 48 else 95
-        forecasts = json['data']['data'][0: index]
+        forecasts = json['data']['data'][0: index + 1]
         predictions = []
+        t0 = forecasts.pop(0)['from']
         for f in forecasts:
-            predictions.append({"time": f['from'],
+            time = self._get_api_time_delta(t0, f['from'])
+            predictions.append({"time": time,
                                 "forecast": f["intensity"]["forecast"],
                                 "index": f["intensity"]["index"]})
         return predictions
