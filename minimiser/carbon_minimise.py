@@ -56,3 +56,15 @@ class Minimiser:
         sorted_times = sorted(costs, key=lambda x: x['cost'])
         optimal_times = [time['time'] for time in sorted_times[0:num_options]]
         return optimal_times[0] if len(optimal_times) == 1 else optimal_times
+
+    async def optimal_time_window_and_location(self, locations, window_len, num_options=1):
+        costs = []
+        for location in locations:
+            times = await self.api.region_forecast_range(location, 48)
+            for window in self.window(times, window_len):
+                carbon_cost = sum([f['forecast'] for f in window])
+                cost = {'location': location, 'time': window[0]['time'], 'cost': carbon_cost}
+                costs.append(cost)
+        sorted_options = sorted(costs, key=lambda x: x['cost'])
+        optimal_options = [(opt['location'], opt['time']) for opt in sorted_options[0:num_options]]
+        return optimal_options[0] if len(optimal_options) == 1 else optimal_options
