@@ -1,4 +1,4 @@
-from carbon_minimise import Minimiser
+from carbon_minimiser.api.minimiser import Minimiser
 import asyncio
 
 
