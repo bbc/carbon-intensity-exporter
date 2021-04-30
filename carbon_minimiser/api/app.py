@@ -43,7 +43,7 @@ async def optimal_time_for_location(request, location):
         return json("Location not found", 404)
 
 
-@app.get('/optimise/location/<location>/window/<window:int>')
+@app.get('/optimise/location/<location>/window/<window:number>')
 async def optimal_time_window_for_location(request, location, window):
     location = location.upper()
     if location in REGIONS.keys():
@@ -53,7 +53,7 @@ async def optimal_time_window_for_location(request, location, window):
         return json("Location not found", 404)
 
 
-@app.get('/optimise/location/window/<window:int>')
+@app.get('/optimise/location/window/<window:number>')
 async def optimal_time_window_and_location(request, window):
     result = await min.optimal_time_window_and_location(locations, window, num_options=get_num_results(request))
     return json(result)
