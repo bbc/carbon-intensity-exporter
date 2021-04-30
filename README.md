@@ -12,7 +12,17 @@ To run the Prometheus server and expose the `/metrics` endpoint, run:
 `python3 -m carbon_intensity_exporter`
 
 ## Carbon Minimiser
-`carbon_minimiser/carbon_minimise.py` provides a series of optimisation functions that calculate the ideal time and 
+`carbon_minimiser/api/minimiser.py` provides a series of optimisation functions that calculate the ideal time and 
 place to perform electricity intensive operations based on the forecasts of the Carbon Intensity API.
 
-An example of its usage can be seen in `carbon_minimiser/example_driver.py`.
+These optimisation functions are made available via an API, which can be launched by running:
+
+`python3 -m carbon_minimiser`
+
+It can also be imported directly, an example of which can be seen in `carbon_minimiser/scripts/example_driver.py`.
+
+## Testing
+
+To run tests against the Exporter and Minimiser, run:
+
+`python3 -m pytest`
