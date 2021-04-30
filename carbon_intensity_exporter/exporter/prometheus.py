@@ -38,8 +38,8 @@ class Prometheus:
                 "man_int": self.api.current_region_intensity("NW_ENGLAND"),
                 "lon_mix": self.api.current_region_mix("LONDON"),
                 "man_mix": self.api.current_region_mix("NW_ENGLAND"),
-                "lon_forecast": self.api.region_forecast_range("LONDON", 12),
-                "man_forecast": self.api.region_forecast_range("NW_ENGLAND", 12)
+                "lon_forecast": self.api.region_forecast_range("LONDON", 48),
+                "man_forecast": self.api.region_forecast_range("NW_ENGLAND", 48)
             }
             results = {}
             for metric, func in api_calls.items():
