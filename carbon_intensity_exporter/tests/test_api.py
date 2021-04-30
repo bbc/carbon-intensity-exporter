@@ -1,6 +1,6 @@
 from asynctest import TestCase, mock
-from carbon_intensity_exporter.api.carbon import CarbonAPI
-from carbon_intensity_exporter.api.api_connection import ApiConnection
+from carbon_intensity_exporter.carbon_api_wrapper.carbon import CarbonAPI
+from carbon_intensity_exporter.carbon_api_wrapper.api_connection import ApiConnection
 
 
 class TestCarbonAPI(TestCase):

@@ -1,4 +1,4 @@
-from carbon_intensity_exporter.api.carbon import CarbonAPI
+from carbon_intensity_exporter.carbon_api_wrapper.carbon import CarbonAPI
 from itertools import islice
 from typing import List
 
@@ -25,7 +25,7 @@ class Minimiser:
     async def optimal_location_now(self, locations: List[str]):
         """
         Given a list of locations, returns the location with lowest carbon intensity right now
-        :param locations: list of locations, see api.carbon.REGIONS
+        :param locations: list of locations, see carbon_api_wrapper.carbon.REGIONS
         :return: lowest carbon location (str)
         """
         options = {}
@@ -38,7 +38,7 @@ class Minimiser:
     async def optimal_time_for_location(self, location: str, num_options: int = 1):
         """
         Given a location, returns the lowest carbon intensity half hour within the next 48 hours
-        :param location: location string, see api.carbon.REGIONS
+        :param location: location string, see carbon_api_wrapper.carbon.REGIONS
         :param num_options: define the number of top options returned
         :return: number of hours and mins till optimal time as +hh:mm string
         """
@@ -51,7 +51,7 @@ class Minimiser:
         """
         Given a list of locations, returns the time and location of the lowest carbon
         intensity half hour window over the next 48 hours
-        :param locations: list of locations, see api.carbon.REGIONS
+        :param locations: list of locations, see carbon_api_wrapper.carbon.REGIONS
         :param num_options: define the number of top options returned
         :return: tuple of (location, time), where time is num hours until optimal start time in hh:mm
         """
@@ -70,7 +70,7 @@ class Minimiser:
         """
         Given a location and time window, returns the start of the time window with lowest
         carbon intensity over the next 48 hours in that location
-        :param location: location string, see api.carbon.REGIONS
+        :param location: location string, see carbon_api_wrapper.carbon.REGIONS
         :param window_len: integer number of hours that you wish to optimise for
         :param num_options: define the number of top options returned
         :return: number of hours and mins from now as +hh:mm string
@@ -91,7 +91,7 @@ class Minimiser:
         """
         Given a list of locations and a time window, returns the location and start of the time window with lowest
         carbon intensity over the next 48 hours
-        :param locations: list of locations, see api.carbon.REGIONS
+        :param locations: list of locations, see carbon_api_wrapper.carbon.REGIONS
         :param window_len: number of hours that you wish to optimise for
         :param num_options: define the number of top options returned
         :return: tuple of (location, time), where time is num hours until optimal start time in hh:mm

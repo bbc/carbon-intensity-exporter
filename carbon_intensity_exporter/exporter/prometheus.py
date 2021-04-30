@@ -1,8 +1,6 @@
-from prometheus_client import start_http_server
-from prometheus_client.core import GaugeMetricFamily, REGISTRY
-from carbon_intensity_exporter.api.carbon import CarbonAPI
+from prometheus_client.core import GaugeMetricFamily
+from carbon_intensity_exporter.carbon_api_wrapper.carbon import CarbonAPI
 import asyncio
-import time
 from datetime import datetime
 
 
@@ -45,7 +43,7 @@ class Prometheus:
             }
             results = {}
             for metric, func in api_calls.items():
-                # prometheus doesn't support an async collect function, so run api calls syncronously
+                # prometheus doesn't support an async collect function, so run carbon_api_wrapper calls syncronously
                 results[metric] = self.execute_synchronously(func)
 
             timestamp = str(datetime.now().timestamp())
@@ -73,14 +71,3 @@ class Prometheus:
                 yield gauge
         else:
             yield self.gauges['up']
-
-
-def main():
-    REGISTRY.register(Prometheus())
-    while True:
-        time.sleep(10)
-
-
-if __name__ == '__main__':
-    start_http_server(8000)
-    main()
