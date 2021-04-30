@@ -1,6 +1,6 @@
 from asynctest import TestCase, mock
-from minimiser.carbon_minimise import Minimiser
-from api.carbon import CarbonAPI
+from carbon_minimiser.carbon_minimise import Minimiser
+from carbon_intensity_exporter.api.carbon import CarbonAPI
 
 
 class TestCarbonMinimiser(TestCase):

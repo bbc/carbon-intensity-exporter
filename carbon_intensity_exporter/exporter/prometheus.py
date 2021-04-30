@@ -1,6 +1,6 @@
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
-from api.carbon import CarbonAPI
+from carbon_intensity_exporter.api.carbon import CarbonAPI
 import asyncio
 import time
 from datetime import datetime

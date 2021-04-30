@@ -1,6 +1,6 @@
-from asynctest import TestCase, mock, CoroutineMock
-from api.carbon import CarbonAPI
-from api.api_connection import ApiConnection
+from asynctest import TestCase, mock
+from carbon_intensity_exporter.api.carbon import CarbonAPI
+from carbon_intensity_exporter.api.api_connection import ApiConnection
 
 
 class TestCarbonAPI(TestCase):
@@ -82,7 +82,7 @@ class TestCarbonAPI(TestCase):
                                   {'from': '2021-04-27T10:30Z', 'intensity': {'forecast': 218, 'index': 'moderate'}},
                                   {'from': '2021-04-27T11:00Z', 'intensity': {'forecast': 214, 'index': 'moderate'}}]}}
         with mock.patch.object(ApiConnection, "get", return_value=data):
-            result = await self.carbon.region_forecast_range(region_id=3, hours=1.5)
+            result = await self.carbon.region_forecast_range(region="LONDON", hours=1.5)
             expected = [{'forecast': 231, 'index': 'moderate', 'time': '+00:30'},
                         {'forecast': 223, 'index': 'moderate', 'time': '+01:00'},
                         {'forecast': 218, 'index': 'moderate', 'time': '+01:30'}]

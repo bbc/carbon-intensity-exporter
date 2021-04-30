@@ -1,4 +1,4 @@
-from api.carbon import CarbonAPI
+from carbon_intensity_exporter.api.carbon import CarbonAPI
 from itertools import islice
 from typing import List
 
