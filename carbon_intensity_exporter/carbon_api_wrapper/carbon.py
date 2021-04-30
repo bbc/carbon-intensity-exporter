@@ -25,19 +25,6 @@ class CarbonAPI:
         minutes = "0" + str(minutes) if minutes < 10 else str(minutes)  # format to mm
         return f"+{hours}:{minutes}"
 
-    @staticmethod
-    def _get_api_time_delta(t1, t2):
-        # convert yyyy-mm-ddThh:mmZ to yyyy-mm-dd:hh:mm for comparison
-        t1 = datetime.strptime(t1, '%Y-%m-%dT%H:%MZ')
-        t2 = datetime.strptime(t2, '%Y-%m-%dT%H:%MZ')
-        diff = t2 - t1
-        seconds = diff.total_seconds()
-        hours = int(seconds // 3600)
-        hours = "0" + str(hours) if hours < 10 else str(hours)  # format to hh
-        minutes = int((seconds % 3600) // 60)
-        minutes = "0" + str(minutes) if minutes < 10 else str(minutes)  # format to mm
-        return f"+{hours}:{minutes}"
-
     """
     Returns 1 if 200 response received from API root, else 0
     """
