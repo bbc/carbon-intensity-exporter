@@ -3,7 +3,7 @@ import argparse
 
 
 def main(port):
-    app.run(port=port)
+    app.run(host='0.0.0.0', port=port)
 
 
 parser = argparse.ArgumentParser()
