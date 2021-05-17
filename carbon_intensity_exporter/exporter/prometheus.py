@@ -10,13 +10,13 @@ class Prometheus:
             'up': GaugeMetricFamily('up',
                                     'Collector Status',
                                     labels=["job"]),
-            'intensity': GaugeMetricFamily('intensity',
+            'carbon_intensity': GaugeMetricFamily('carbon_intensity',
                                            'Carbon Intensity',
                                            labels=["location"]),
-            'fuel_mix': GaugeMetricFamily('fuel_mix',
+            'carbon_fuel_mix': GaugeMetricFamily('carbon_fuel_mix',
                                           'Current Fuel Mix',
                                           labels=["location", "fuel_type"]),
-            'forecast': GaugeMetricFamily('intensity_forecast',
+            'carbon_forecast': GaugeMetricFamily('carbon_intensity_forecast',
                                           'Current Fuel Mix',
                                           labels=["location", "time"])
         }
@@ -45,13 +45,13 @@ class Prometheus:
 
         timestamp = str(datetime.now().timestamp())
 
-        self.gauges['intensity'].add_metric(labels=[region], timestamp=timestamp, value=results['int'][0])
+        self.gauges['carbon_intensity'].add_metric(labels=[region], timestamp=timestamp, value=results['int'][0])
 
         for fuel, percent in results['mix'].items():
-            self.gauges['fuel_mix'].add_metric(labels=[region, fuel], timestamp=timestamp, value=percent)
+            self.gauges['carbon_fuel_mix'].add_metric(labels=[region, fuel], timestamp=timestamp, value=percent)
 
         for forecast in results['forecast']:
-            self.gauges['forecast'].add_metric(labels=[region,
+            self.gauges['carbon_forecast'].add_metric(labels=[region,
                                                 forecast['time']],
                                                 timestamp=timestamp,
                                                 value=forecast['forecast'])
