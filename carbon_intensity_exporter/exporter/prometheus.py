@@ -22,14 +22,10 @@ class Prometheus:
         }
         self.api = CarbonAPI()
 
-    def execute_synchronously(self, func):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        t = loop.create_task(func)
-        r = loop.run_until_complete(t)
-        return r
+    async def execute_collect_region(self):
+        await asyncio.gather(*(self.collect_region(region) for region in REGIONS.keys()))
 
-    def collect_region(self, region):
+    async def collect_region(self, region):
         """Collect metrics for a single region"""
         api_calls = {
             "int": self.api.current_region_intensity(region),
@@ -41,7 +37,7 @@ class Prometheus:
 
         for metric, func in api_calls.items():
             # prometheus doesn't support an async collect function, so run carbon_api_wrapper calls synchronously
-            results[metric] = self.execute_synchronously(func)
+            results[metric] = await func
 
         timestamp = str(datetime.now().timestamp())
 
@@ -60,8 +56,7 @@ class Prometheus:
         healthy = self.execute_synchronously(self.api.health_status())
         self.gauges['up'].add_metric(labels=["Carbon API Collector"], value=healthy)
         if healthy:
-            for region in REGIONS.keys():
-                self.collect_region(region)
+            asyncio.run(self.execute_collect_region())
 
             for name, gauge in self.gauges.items():
                 yield gauge
