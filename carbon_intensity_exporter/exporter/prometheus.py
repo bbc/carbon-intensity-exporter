@@ -6,20 +6,7 @@ from datetime import datetime
 
 class Prometheus:
     def __init__(self):
-        self.gauges = {
-            'up': GaugeMetricFamily('up',
-                                    'Collector Status',
-                                    labels=["job"]),
-            'carbon_intensity': GaugeMetricFamily('carbon_intensity',
-                                           'Carbon Intensity',
-                                           labels=["location"]),
-            'carbon_fuel_mix': GaugeMetricFamily('carbon_fuel_mix',
-                                          'Current Fuel Mix',
-                                          labels=["location", "fuel_type"]),
-            'carbon_forecast': GaugeMetricFamily('carbon_intensity_forecast',
-                                          'Current Fuel Mix',
-                                          labels=["location", "time"])
-        }
+        self.gauges = {}
         self.api = CarbonAPI()
 
     async def execute_collect_region(self):
@@ -53,7 +40,21 @@ class Prometheus:
                                                 value=forecast['forecast'])
 
     def collect(self):
-        healthy = self.execute_synchronously(self.api.health_status())
+        self.gauges = {
+            'up': GaugeMetricFamily('up',
+                                    'Collector Status',
+                                    labels=["job"]),
+            'carbon_intensity': GaugeMetricFamily('carbon_intensity',
+                                           'Carbon Intensity',
+                                           labels=["location"]),
+            'carbon_fuel_mix': GaugeMetricFamily('carbon_fuel_mix',
+                                          'Current Fuel Mix',
+                                          labels=["location", "fuel_type"]),
+            'carbon_forecast': GaugeMetricFamily('carbon_intensity_forecast',
+                                          'Current Fuel Mix',
+                                          labels=["location", "time"])
+        }
+        healthy = asyncio.run(self.api.health_status())
         self.gauges['up'].add_metric(labels=["Carbon API Collector"], value=healthy)
         if healthy:
             asyncio.run(self.execute_collect_region())
