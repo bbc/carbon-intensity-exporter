@@ -3,6 +3,11 @@ from carbon_intensity_exporter.carbon_api_wrapper.carbon import CarbonAPI, REGIO
 import asyncio
 from datetime import datetime
 
+REGION_GEOHASH = {
+    'N_SCOTLAND': "gfk8", 'S_SCOTLAND': "gfj0", 'NW_ENGLAND': "gcw2", 'NE_ENGLAND': "gcy8", 'YORKSHIRE': "gcx4", 'N_WALES': "gcmm", 'S_WALES': "gcjt",
+    'W_MIDLANDS': "gcqf", 'E_MIDLANDS': "gcrs", 'E_ENGLAND': "u129", 'SW_ENGLAND': "gcj3", 'S_ENGLAND': "gcnf", 'LONDON': "gcpv",
+    'SE_ENGLAND': "u107"
+}
 
 class Prometheus:
     def __init__(self):
@@ -28,13 +33,15 @@ class Prometheus:
 
         timestamp = str(datetime.now().timestamp())
 
-        self.gauges['carbon_intensity'].add_metric(labels=[region], timestamp=timestamp, value=results['int'][0])
+        self.gauges['carbon_intensity'].add_metric(labels=[region, REGION_GEOHASH.get(region,"")], timestamp=timestamp, value=results['int'][0])
 
         for fuel, percent in results['mix'].items():
-            self.gauges['carbon_fuel_mix'].add_metric(labels=[region, fuel], timestamp=timestamp, value=percent)
+            self.gauges['carbon_fuel_mix'].add_metric(labels=[region, REGION_GEOHASH.get(region,""), fuel], timestamp=timestamp, value=percent)
 
         for forecast in results['forecast']:
-            self.gauges['carbon_forecast'].add_metric(labels=[region,
+            self.gauges['carbon_forecast'].add_metric(labels=[
+                                                region,
+                                                REGION_GEOHASH.get(region,""),
                                                 forecast['time']],
                                                 timestamp=timestamp,
                                                 value=forecast['forecast'])
@@ -46,13 +53,13 @@ class Prometheus:
                                     labels=["job"]),
             'carbon_intensity': GaugeMetricFamily('carbon_intensity',
                                            'Carbon Intensity',
-                                           labels=["location"]),
+                                           labels=["location", "geohash"]),
             'carbon_fuel_mix': GaugeMetricFamily('carbon_fuel_mix',
                                           'Current Fuel Mix',
-                                          labels=["location", "fuel_type"]),
+                                          labels=["location", "geohash", "fuel_type"]),
             'carbon_forecast': GaugeMetricFamily('carbon_intensity_forecast',
                                           'Current Fuel Mix',
-                                          labels=["location", "time"])
+                                          labels=["location", "geohash", "time"])
         }
         healthy = asyncio.run(self.api.health_status())
         self.gauges['up'].add_metric(labels=["Carbon API Collector"], value=healthy)
