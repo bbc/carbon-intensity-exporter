@@ -14,4 +14,4 @@ sanic==21.3.4
 sanic-routing==0.6.2
 ujson==4.0.2
 uvloop==0.15.2
-websockets==8.1
+websockets==9.1
