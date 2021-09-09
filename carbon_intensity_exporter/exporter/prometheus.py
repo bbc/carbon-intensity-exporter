@@ -29,7 +29,10 @@ class Prometheus:
 
         for metric, func in api_calls.items():
             # prometheus doesn't support an async collect function, so run carbon_api_wrapper calls synchronously
-            results[metric] = await func
+            result = await func
+            if result is None:
+                return
+            results[metric] = result
 
         timestamp = str(datetime.now().timestamp())
 

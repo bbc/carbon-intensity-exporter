@@ -37,34 +37,46 @@ class CarbonAPI:
     along with a descriptor of intensity from very low -> very high
     """
     async def current_national_intensity(self):
-        json = await self.api.get("intensity")
-        intensity = json['data'][0]['intensity']
-        return intensity['actual'], intensity['index']
+        try:
+            json = await self.api.get("intensity")
+            intensity = json['data'][0]['intensity']
+            return intensity['actual'], intensity['index']
+        except KeyError as e:
+            return None
 
     """
     Returns a tuple of the estimated current carbon intensity for the region,
     along with a descriptor of intensity from very low -> very high
     """
     async def current_region_intensity(self, region):
-        json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
-        intensity = json['data'][0]['data'][0]['intensity']
-        return intensity['forecast'], intensity['index']
+        try:
+            json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
+            intensity = json['data'][0]['data'][0]['intensity']
+            return intensity['forecast'], intensity['index']
+        except KeyError as e:
+            return None
 
     """
     Returns a dict of fuel types and percentages, which represent the current national fuel mix
     """
     async def current_national_mix(self):
-        json = await self.api.get(f"generation")
-        mix_list = json['data']['generationmix']
-        return {mix['fuel']: mix['perc'] for mix in mix_list}
+        try:
+            json = await self.api.get(f"generation")
+            mix_list = json['data']['generationmix']
+            return {mix['fuel']: mix['perc'] for mix in mix_list}
+        except KeyError as e:
+            return None
 
     """
     Returns a dict of fuel types and percentages, which represent the current regional fuel mix
     """
     async def current_region_mix(self, region):
-        json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
-        mix_list = json['data'][0]['data'][0]['generationmix']
-        return {mix['fuel']: mix['perc'] for mix in mix_list}
+        try:
+            json = await self.api.get(f"regional/regionid/{REGIONS[region]}")
+            mix_list = json['data'][0]['data'][0]['generationmix']
+            return {mix['fuel']: mix['perc'] for mix in mix_list}
+        except KeyError as e:
+            return None
 
     """
     hours: int or float, should be less than 47.5
@@ -72,12 +84,15 @@ class CarbonAPI:
     down to the nearest half hour)
     """
     async def national_forecast_single(self, hours):
-        json = await self.api.get(f"intensity/{datetime.utcnow().isoformat()}/fw48h")
-        # endpoint returns half hourly predictions from current half hour rounded
-        # so index 2n gives n hours from now. Max time is therefore 47.5 hours
-        index = int(hours*2) if hours < 48 else 95
-        prediction = json['data'][index]['intensity']
-        return prediction['forecast'], prediction['index']
+        try:
+            json = await self.api.get(f"intensity/{datetime.utcnow().isoformat()}/fw48h")
+            # endpoint returns half hourly predictions from current half hour rounded
+            # so index 2n gives n hours from now. Max time is therefore 47.5 hours
+            index = int(hours*2) if hours < 48 else 95
+            prediction = json['data'][index]['intensity']
+            return prediction['forecast'], prediction['index']
+        except KeyError as e:
+            return None
 
     """
     hours: int or float, max available is 47.5
@@ -85,18 +100,21 @@ class CarbonAPI:
     to the nearest half hour) and that many hours from now 
     """
     async def national_forecast_range(self, hours):
-        json = await self.api.get(f"intensity/{datetime.utcnow().isoformat()}/fw48h")
-        # endpoint returns half hourly predictions from current half hour rounded
-        index = int(hours*2) if hours < 48 else 95
-        forecasts = json['data'][0: index + 1]
-        predictions = []
-        t0 = forecasts.pop(0)['from']
-        for f in forecasts:
-            time = self._get_api_time_delta(t0, f['from'])
-            predictions.append({"time": time,
-                                "forecast": f["intensity"]["forecast"],
-                                "index": f["intensity"]["index"]})
-        return predictions
+        try:
+            json = await self.api.get(f"intensity/{datetime.utcnow().isoformat()}/fw48h")
+            # endpoint returns half hourly predictions from current half hour rounded
+            index = int(hours*2) if hours < 48 else 95
+            forecasts = json['data'][0: index + 1]
+            predictions = []
+            t0 = forecasts.pop(0)['from']
+            for f in forecasts:
+                time = self._get_api_time_delta(t0, f['from'])
+                predictions.append({"time": time,
+                                    "forecast": f["intensity"]["forecast"],
+                                    "index": f["intensity"]["index"]})
+            return predictions
+        except KeyError as e:
+            return None
 
     """
     hours: int or float, should be less than 47.5
@@ -104,10 +122,13 @@ class CarbonAPI:
     down to the nearest half hour)
     """
     async def region_forecast_single(self, region, hours):
-        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
-        index = int(hours*2) if hours < 48 else 95
-        prediction = json['data']['data'][index]['intensity']
-        return prediction['forecast'], prediction['index']
+        try:
+            json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
+            index = int(hours*2) if hours < 48 else 95
+            prediction = json['data']['data'][index]['intensity']
+            return prediction['forecast'], prediction['index']
+        except KeyError as e:
+            return None
 
     """
     region_id: https://carbon-intensity.github.io/api-definitions/?shell#region-list
@@ -116,14 +137,17 @@ class CarbonAPI:
     to the nearest half hour) and that many hours from now
     """
     async def region_forecast_range(self, region, hours):
-        json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
-        index = int(hours*2) if hours < 48 else 95
-        forecasts = json['data']['data'][0: index + 1]
-        predictions = []
-        t0 = forecasts.pop(0)['from']
-        for f in forecasts:
-            time = self._get_api_time_delta(t0, f['from'])
-            predictions.append({"time": time,
-                                "forecast": f["intensity"]["forecast"],
-                                "index": f["intensity"]["index"]})
-        return predictions
+        try:
+            json = await self.api.get(f"regional/intensity/{datetime.utcnow().isoformat()}/fw48h/regionid/{REGIONS[region]}")
+            index = int(hours*2) if hours < 48 else 95
+            forecasts = json['data']['data'][0: index + 1]
+            predictions = []
+            t0 = forecasts.pop(0)['from']
+            for f in forecasts:
+                time = self._get_api_time_delta(t0, f['from'])
+                predictions.append({"time": time,
+                                    "forecast": f["intensity"]["forecast"],
+                                    "index": f["intensity"]["index"]})
+            return predictions
+        except KeyError as e:
+            return None
