@@ -42,6 +42,8 @@ class CarbonAPI:
             intensity = json['data'][0]['intensity']
             return intensity['actual'], intensity['index']
         except KeyError as e:
+            print("Failed to collect national intensity")
+            print(e)
             return None
 
     """
@@ -54,6 +56,8 @@ class CarbonAPI:
             intensity = json['data'][0]['data'][0]['intensity']
             return intensity['forecast'], intensity['index']
         except KeyError as e:
+            print("Failed to collect regional intensity")
+            print(e)
             return None
 
     """
@@ -65,6 +69,8 @@ class CarbonAPI:
             mix_list = json['data']['generationmix']
             return {mix['fuel']: mix['perc'] for mix in mix_list}
         except KeyError as e:
+            print("Failed to collect national mix")
+            print(e)
             return None
 
     """
@@ -76,6 +82,8 @@ class CarbonAPI:
             mix_list = json['data'][0]['data'][0]['generationmix']
             return {mix['fuel']: mix['perc'] for mix in mix_list}
         except KeyError as e:
+            print("Failed to collect regional mix")
+            print(e)
             return None
 
     """
@@ -92,12 +100,14 @@ class CarbonAPI:
             prediction = json['data'][index]['intensity']
             return prediction['forecast'], prediction['index']
         except KeyError as e:
+            print("Failed to collect national forecast")
+            print(e)
             return None
 
     """
     hours: int or float, max available is 47.5
     Given a number of hours, returns the predicted national carbon intensity at each half hour between now (rounded down
-    to the nearest half hour) and that many hours from now 
+    to the nearest half hour) and that many hours from now
     """
     async def national_forecast_range(self, hours):
         try:
@@ -114,6 +124,8 @@ class CarbonAPI:
                                     "index": f["intensity"]["index"]})
             return predictions
         except KeyError as e:
+            print("Failed to collect national forecast range")
+            print(e)
             return None
 
     """
@@ -128,6 +140,8 @@ class CarbonAPI:
             prediction = json['data']['data'][index]['intensity']
             return prediction['forecast'], prediction['index']
         except KeyError as e:
+            print("Failed to collect region forcast")
+            print(e)
             return None
 
     """
@@ -150,4 +164,6 @@ class CarbonAPI:
                                     "index": f["intensity"]["index"]})
             return predictions
         except KeyError as e:
+            print("Failed to collect region forecast range")
+            print(e)
             return None

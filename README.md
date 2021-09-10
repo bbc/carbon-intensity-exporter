@@ -12,6 +12,10 @@ To run the Prometheus exporter server and expose the `/metrics` endpoint, run:
 
 `python3 -m carbon_intensity_exporter`
 
+```
+curl localhost:8000/metrics
+```
+
 ### Metrics
 
 Name     | Sample Labels | Sample Value | Description

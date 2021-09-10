@@ -17,4 +17,6 @@ class ApiConnection:
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False), trust_env=True) as session:
             async with session.get(url) as r:
                 json = await r.json()
+                if r.status != 200:
+                    print(f"Error requesting: {url} Status code: {r.status}")
                 return json
