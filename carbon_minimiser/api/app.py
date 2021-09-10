@@ -16,6 +16,15 @@ def get_num_results(request):
     return results
 
 
+def get_time_range(request):
+    try:
+        range_param = request.args['range'][0].split(",")
+        range = [float(r) for r in range_param]
+    except KeyError:
+        range = [0,95]
+    return range
+
+
 @app.get('/')
 async def root(request):
     return json("Carbon Minimiser")
@@ -23,7 +32,7 @@ async def root(request):
 
 @app.get('/optimise')
 async def optimal_time_and_location(request):
-    result = await min.optimal_time_and_location(locations, num_options=get_num_results(request))
+    result = await min.optimal_time_and_location(locations, num_options=get_num_results(request), time_range=get_time_range(request))
     return json(result)
 
 
@@ -37,7 +46,7 @@ async def optimal_location(request):
 async def optimal_time_for_location(request, location):
     location = location.upper()
     if location in REGIONS.keys():
-        result = await min.optimal_time_for_location(location, num_options=get_num_results(request))
+        result = await min.optimal_time_for_location(location, num_options=get_num_results(request), time_range=get_time_range(request))
         return json(result)
     else:
         return json("Location not found", 404)
@@ -47,7 +56,10 @@ async def optimal_time_for_location(request, location):
 async def optimal_time_window_for_location(request, location, window):
     location = location.upper()
     if location in REGIONS.keys():
-        result = await min.optimal_time_window_for_location(location, window, num_options=get_num_results(request))
+        result = await min.optimal_time_window_for_location(location, 
+                                                            window, 
+                                                            num_options=get_num_results(request),
+                                                            time_range=get_time_range(request))
         return json(result)
     else:
         return json("Location not found", 404)
@@ -55,5 +67,5 @@ async def optimal_time_window_for_location(request, location, window):
 
 @app.get('/optimise/location/window/<window:number>')
 async def optimal_time_window_and_location(request, window):
-    result = await min.optimal_time_window_and_location(locations, window, num_options=get_num_results(request))
+    result = await min.optimal_time_window_and_location(locations, window, num_options=get_num_results(request), time_range=get_time_range(request))
     return json(result)

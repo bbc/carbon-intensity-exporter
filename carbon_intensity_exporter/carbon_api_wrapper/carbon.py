@@ -116,7 +116,7 @@ class CarbonAPI:
             index = int(hours*2) if hours < 48 else 95
             forecasts = json['data'][0: index + 1]
             predictions = []
-            t0 = forecasts.pop(0)['from']
+            t0 = forecasts[0]['from']
             for f in forecasts:
                 time = self._get_api_time_delta(t0, f['from'])
                 predictions.append({"time": time,
@@ -156,7 +156,7 @@ class CarbonAPI:
             index = int(hours*2) if hours < 48 else 95
             forecasts = json['data']['data'][0: index + 1]
             predictions = []
-            t0 = forecasts.pop(0)['from']
+            t0 = forecasts[0]['from']
             for f in forecasts:
                 time = self._get_api_time_delta(t0, f['from'])
                 predictions.append({"time": time,
