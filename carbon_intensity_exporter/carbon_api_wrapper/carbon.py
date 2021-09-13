@@ -118,8 +118,8 @@ class CarbonAPI:
             predictions = []
             t0 = forecasts[0]['from']
             for f in forecasts:
-                time = self._get_api_time_delta(t0, f['from'])
-                predictions.append({"time": time,
+               # time = self._get_api_time_delta(t0, f['from'])
+                predictions.append({"time": f['from'],
                                     "forecast": f["intensity"]["forecast"],
                                     "index": f["intensity"]["index"]})
             return predictions
@@ -158,8 +158,8 @@ class CarbonAPI:
             predictions = []
             t0 = forecasts[0]['from']
             for f in forecasts:
-                time = self._get_api_time_delta(t0, f['from'])
-                predictions.append({"time": time,
+               # time = self._get_api_time_delta(t0, f['from'])
+                predictions.append({"time": f['from'],
                                     "forecast": f["intensity"]["forecast"],
                                     "index": f["intensity"]["index"]})
             return predictions
