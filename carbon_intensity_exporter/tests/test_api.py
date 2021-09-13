@@ -58,10 +58,10 @@ class TestCarbonAPI(TestCase):
                          {'from': '2021-04-27T11:00Z', 'intensity': {'forecast': 214, 'index': 'moderate'}}]}
         with mock.patch.object(ApiConnection, "get", return_value=data):
             result = await self.carbon.national_forecast_range(1.5)
-            expected = [{'time': '+00:00', 'forecast': 233, 'index': 'moderate'},
-                        {'time': '+00:30', 'forecast': 231, 'index': 'moderate'},
-                        {'time': '+01:00', 'forecast': 223, 'index': 'moderate'},
-                        {'time': '+01:30', 'forecast': 218, 'index': 'moderate'}]
+            expected = [{'time': '2021-04-27T08:30Z', 'forecast': 233, 'index': 'moderate'},
+                        {'time': '2021-04-27T09:00Z', 'forecast': 231, 'index': 'moderate'},
+                        {'time': '2021-04-27T09:30Z', 'forecast': 223, 'index': 'moderate'},
+                        {'time': '2021-04-27T10:00Z', 'forecast': 218, 'index': 'moderate'}]
             self.assertEqual(result, expected)
 
     async def test_region_forecast_single(self):
@@ -84,8 +84,8 @@ class TestCarbonAPI(TestCase):
                                   {'from': '2021-04-27T11:00Z', 'intensity': {'forecast': 214, 'index': 'moderate'}}]}}
         with mock.patch.object(ApiConnection, "get", return_value=data):
             result = await self.carbon.region_forecast_range(region="LONDON", hours=1.5)
-            expected = [{'time': '+00:00', 'forecast': 233, 'index': 'moderate'},
-                        {'time': '+00:30', 'forecast': 231, 'index': 'moderate'},
-                        {'time': '+01:00', 'forecast': 223, 'index': 'moderate'},
-                        {'time': '+01:30', 'forecast': 218, 'index': 'moderate'}]
+            expected = [{'time': '2021-04-27T08:30Z', 'forecast': 233, 'index': 'moderate'},
+                        {'time': '2021-04-27T09:00Z', 'forecast': 231, 'index': 'moderate'},
+                        {'time': '2021-04-27T09:30Z', 'forecast': 223, 'index': 'moderate'},
+                        {'time': '2021-04-27T10:00Z', 'forecast': 218, 'index': 'moderate'}]
             self.assertEqual(result, expected)

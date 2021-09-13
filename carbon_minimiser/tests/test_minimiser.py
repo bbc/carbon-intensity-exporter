@@ -15,59 +15,59 @@ class TestCarbonMinimiser(TestCase):
             self.assertEqual(result, "b")
 
     async def test_optimal_time_for_location(self):
-        data = [{'forecast': 231, 'index': 'moderate', 'time': '+00:30'},
-                {'forecast': 223, 'index': 'moderate', 'time': '+01:00'},
-                {'forecast': 218, 'index': 'moderate', 'time': '+01:30'}]
+        data = [{'forecast': 231, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                {'forecast': 223, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
+                {'forecast': 218, 'index': 'moderate', 'time': '2021-04-27T09:30Z'}]
         with mock.patch.object(CarbonAPI, "region_forecast_range", return_value=data):
             result = await self.min.optimal_time_for_location("")
-            self.assertEqual(result, "+01:30")
+            self.assertEqual(result, "2021-04-27T09:30Z")
 
     async def test_optimal_time_and_location(self):
-        data = [[{'forecast': 231, 'index': 'moderate', 'time': '+00:30'},
-                {'forecast': 23, 'index': 'moderate', 'time': '+01:00'}],
-                [{'forecast': 261, 'index': 'moderate', 'time': '+00:30'},
-                 {'forecast': 234, 'index': 'moderate', 'time': '+01:00'}],
-                [{'forecast': 251, 'index': 'moderate', 'time': '+00:30'},
-                 {'forecast': 253, 'index': 'moderate', 'time': '+01:00'}]]
+        data = [[{'forecast': 231, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                {'forecast': 23, 'index': 'moderate', 'time': '2021-04-27T09:00Z'}],
+                [{'forecast': 261, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                 {'forecast': 234, 'index': 'moderate', 'time': '2021-04-27T09:00Z'}],
+                [{'forecast': 251, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                 {'forecast': 253, 'index': 'moderate', 'time': '2021-04-27T09:00Z'}]]
         with mock.patch.object(CarbonAPI, "region_forecast_range", side_effect=data):
             result = await self.min.optimal_time_and_location(["a", "b", "c"])
-            self.assertEqual(result, ("a", "+01:00"))
+            self.assertEqual(result, ("a", "2021-04-27T09:00Z"))
 
     async def test_optimal_time_window_for_location(self):
-        data = [{'forecast': 100, 'index': 'moderate', 'time': '+00:30'},
-                {'forecast': 200, 'index': 'moderate', 'time': '+01:00'},
-                {'forecast': 50, 'index': 'moderate', 'time': '+01:30'},
-                {'forecast': 300, 'index': 'low', 'time': '+02:00'},
-                {'forecast': 200, 'index': 'moderate', 'time': '+02:30'},
-                {'forecast': 150, 'index': 'moderate', 'time': '+03:00'}]
+        data = [{'forecast': 100, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                {'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
+                {'forecast': 50, 'index': 'moderate', 'time': '2021-04-27T09:30Z'},
+                {'forecast': 300, 'index': 'low', 'time': '2021-04-27T10:00Z'},
+                {'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T10:30Z'},
+                {'forecast': 150, 'index': 'moderate', 'time': '2021-04-27T11:00Z'}]
         with mock.patch.object(CarbonAPI, "region_forecast_range", return_value=data):
             result = await self.min.optimal_time_window_for_location("", 0.5)
-            self.assertEqual(result, "+01:30")
+            self.assertEqual(result, "2021-04-27T09:30Z")
             result = await self.min.optimal_time_window_for_location("", 1)
-            self.assertEqual(result, "+01:00")
+            self.assertEqual(result, "2021-04-27T09:00Z")
             result = await self.min.optimal_time_window_for_location("", 1.5)
-            self.assertEqual(result, "+00:30")
+            self.assertEqual(result, "2021-04-27T08:30Z")
             result = await self.min.optimal_time_window_for_location("", 2)
-            self.assertEqual(result, "+00:30")
+            self.assertEqual(result, "2021-04-27T08:30Z")
             result = await self.min.optimal_time_window_for_location("", 2.5)
-            self.assertEqual(result, "+00:30")
+            self.assertEqual(result, "2021-04-27T08:30Z")
 
     async def test_optimal_time_window_and_location(self):
-        data = [[{'forecast': 201, 'index': 'moderate', 'time': '+00:30'},
-                 {'forecast': 10, 'index': 'moderate', 'time': '+01:00'},
-                 {'forecast': 200, 'index': 'moderate', 'time': '+01:30'}],
-                [{'forecast': 200, 'index': 'moderate', 'time': '+00:30'},
-                 {'forecast': 20, 'index': 'moderate', 'time': '+01:00'},
-                 {'forecast': 100, 'index': 'moderate', 'time': '+01:30'}],
-                [{'forecast': 200, 'index': 'moderate', 'time': '+00:30'},
-                 {'forecast': 250, 'index': 'moderate', 'time': '+01:00'},
-                 {'forecast': 200, 'index': 'moderate', 'time': '+01:30'}]]
+        data = [[{'forecast': 201, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                 {'forecast': 10, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
+                 {'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T09:30Z'}],
+                [{'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                 {'forecast': 20, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
+                 {'forecast': 100, 'index': 'moderate', 'time': '2021-04-27T09:30Z'}],
+                [{'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T08:30Z'},
+                 {'forecast': 250, 'index': 'moderate', 'time': '2021-04-27T09:00Z'},
+                 {'forecast': 200, 'index': 'moderate', 'time': '2021-04-27T09:30Z'}]]
         with mock.patch.object(CarbonAPI, "region_forecast_range", side_effect=data):
             result = await self.min.optimal_time_window_and_location(["a", "b", "c"], 0.5)
-            self.assertEqual(result, ("a", "+01:00"))
+            self.assertEqual(result, ("a", "2021-04-27T09:00Z"))
         with mock.patch.object(CarbonAPI, "region_forecast_range", side_effect=data):
             result = await self.min.optimal_time_window_and_location(["a", "b", "c"], 1)
-            self.assertEqual(result, ("b", "+01:00"))
+            self.assertEqual(result, ("b", "2021-04-27T09:00Z"))
         with mock.patch.object(CarbonAPI, "region_forecast_range", side_effect=data):
             result = await self.min.optimal_time_window_and_location(["a", "b", "c"], 1.5)
-            self.assertEqual(result, ("b", "+00:30"))
+            self.assertEqual(result, ("b", "2021-04-27T08:30Z"))
