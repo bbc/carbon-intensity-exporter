@@ -2,9 +2,11 @@ from sanic import Sanic
 from sanic.response import json
 from carbon_minimiser.api.minimiser import Minimiser
 from carbon_intensity_exporter.carbon_api_wrapper.carbon import REGIONS
+from carbon_minimiser.api.forecaster import Forecaster
 
 app = Sanic("Carbon Minimiser")
 min = Minimiser()
+forecast = Forecaster()
 locations = ["LONDON", "NW_ENGLAND"]
 
 
@@ -69,3 +71,34 @@ async def optimal_time_window_for_location(request, location, window):
 async def optimal_time_window_and_location(request, window):
     result = await min.optimal_time_window_and_location(locations, window, num_options=get_num_results(request), time_range=get_time_range(request))
     return json(result)
+    
+#Grads 2021 additional routes
+@app.get('/information')
+async def info_national_now(request):
+    result = await forecast.info_national_now()
+    return json(result)
+    
+@app.get('/information/<location>')
+async def info_regional_now(request, location):
+    location = location.upper()
+    if location in REGIONS.keys():
+        result = await forecast.info_regional_now(location)
+        return json(result)
+    else:
+        return json("Location not found", 404)
+        
+@app.get('/forecast/<hours>')
+async def forecast_national(request, hours):
+    result = await forecast.info_national_future(float(hours))
+    return json(result)
+    
+@app.get('/forecast/<location>/<hours>')
+async def forecast_regional(request, location, hours):
+    location = location.upper()
+    if location in REGIONS.keys():
+        result = await forecast.info_regional_future(location, float(hours))
+        return json(result)
+    else:
+        return json("Location not found", 404)
+    
+
