@@ -100,5 +100,18 @@ async def forecast_regional(request, location, hours):
         return json(result)
     else:
         return json("Location not found", 404)
+
+
+@app.get('/optimise/location/<location>/window/<window:number>/range/<t_range>')
+async def optimal_time_window_for_location(request, location, window,t_range):
+    location = location.upper()
+    if location in REGIONS.keys():
+        result = await min.optimal_time_window_for_location(location, 
+                                                            window, 
+                                                            num_options=get_num_results(request),
+                                                            time_range=[0,int(t_range)])
+        return json(result)
+    else:
+        return json("Location not found", 404)
     
 

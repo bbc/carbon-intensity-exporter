@@ -70,7 +70,7 @@ class Minimiser:
         optimal_options = [(opt['location'], opt['time']) for opt in sorted_options[0:num_options]]
         return optimal_options[0] if len(optimal_options) == 1 else optimal_options
 
-    async def optimal_time_window_for_location(self, location: str, window_len: float, num_options: int = 1, time_range=[0, 47.5]):
+    async def optimal_time_window_for_location(self, location: str, window_len: float, num_options: int = 1, time_range: List[int] = [0, 47.5]):
         """
         Given a location and time window, returns the start of the time window with lowest
         carbon intensity over the given time range in that location

@@ -45,16 +45,16 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 * **Method:** `GET`
 
 *  **URL Params**
-   
+
     * **Required:** `<location>` [Key in Regions](https://github.com/bbc/rd-carbon-intensity-exporter/blob/11e17d679f8ff0611d1fd585d493811e603ce3fc/carbon_intensity_exporter/carbon_api_wrapper/carbon.py#L4)
-   
+
     * **Optional:** `results=[int]`
 
 * **Success Response:**
 
   * **Code:** 200 <br />
     **Content:** `[+hh:mm, +hh:mm, +hh:mm]`
-    
+
 * **Error Response:**
 
   * **Code:** 404 <br />
@@ -70,8 +70,8 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 * **Method:** `GET`
 
 *  **URL Params**
-   
-    * **Required:** 
+
+    * **Required:**
       * `<location>` [Key in Regions](https://github.com/bbc/rd-carbon-intensity-exporter/blob/11e17d679f8ff0611d1fd585d493811e603ce3fc/carbon_intensity_exporter/carbon_api_wrapper/carbon.py#L4)
       * `<window>` float number of hours (minimum resolution 0.5 hours)  
     * **Optional:** `results=[int]`
@@ -80,7 +80,7 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `[+hh:mm, +hh:mm, +hh:mm]`
-    
+
 * **Error Response:**
 
   * **Code:** 404 <br />
@@ -96,8 +96,8 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 * **Method:** `GET`
 
 *  **URL Params**
-   
-    * **Required:** 
+
+    * **Required:**
       * `<window>` float number of hours (minimum resolution 0.5 hours)  
     * **Optional:** `results=[int]`
 
@@ -105,7 +105,7 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `[[location, +hh:mm], [location, +hh:mm]]`
-    
+
 * **Error Response:**
 
   * **Code:** 404 <br />
@@ -125,7 +125,7 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `{"intensity":[CI_Level,Status_tag],"mix":[Energy_source:%]}`
-    
+
 * **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/information`
 
 
@@ -140,12 +140,12 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `{"intensity":[CI_Level,Status_tag],"mix":[Energy_source:%]}`
-    
+
 * **Error Response:**
 
   * **Code:** 404 <br />
     **Content:** `"Location not found"`
-    
+
 * **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/information/nw_england`
 
 ### Forecast carbon intensity status for entire nation over a given time period
@@ -159,7 +159,7 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `[{"time":ISO_8601_timestamp,"forecast":CI_Level,"index":Status_tag}]`
-    
+
 * **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/forecast/5`
 
 
@@ -174,10 +174,38 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
 
   * **Code:** 200 <br />
     **Content:** `{[{"time":ISO_8601_timestamp,"forecast":CI_Level,"index":Status_tag}]`
-    
+
 * **Error Response:**
 
   * **Code:** 404 <br />
     **Content:** `"Location not found"`
-    
+
 * **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/forecast/nw_england/5`
+
+
+### Get optimal time window for a location within the next T hours
+#### Given a time window of H hours and a deadline of T hours, returns the optimal start time to minimise carbon usage over H hours
+
+* **URL:** `/optimise/location/<location>/window/<window>/range/<t_range>`
+
+* **Method:** `GET`
+
+*  **URL Params**
+
+    * **Required:**
+      * `<location>` [Key in Regions](https://github.com/bbc/rd-carbon-intensity-exporter/blob/11e17d679f8ff0611d1fd585d493811e603ce3fc/carbon_intensity_exporter/carbon_api_wrapper/carbon.py#L4)
+      * `<window>` float number of hours (minimum resolution 0.5 hours)  
+      * `<t_range>` int number of hours
+    * **Optional:** `results=[int]`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `[ISO_8601_timestamp]`
+
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `"Location not found"`
+
+* **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/optimise/location/london/window/5/range/12?results=3`
