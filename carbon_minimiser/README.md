@@ -112,3 +112,72 @@ It currently only optimises across London and Manchester ("NW_ENGLAND" to the AP
     **Content:** `"Location not found"`
 
 * **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/optimise/location/window/5?results=2`
+
+
+### Get current carbon intensity status for entire nation
+#### Returns average carbon intensity level at current time along with a status with values within [very low, low, moderate, high, very high] and a breakdown of active energy sources
+
+* **URL:** `/information`
+
+* **Method:** `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{"intensity":[CI_Level,Status_tag],"mix":[Energy_source:%]}`
+    
+* **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/information`
+
+
+### Get current carbon intensity status for a specified region
+#### Returns carbon intensity level for given region at current time along with a status with values within [very low, low, moderate, high, very high] and a breakdown of active energy sources
+
+* **URL:** `/information/<location>`
+
+* **Method:** `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{"intensity":[CI_Level,Status_tag],"mix":[Energy_source:%]}`
+    
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `"Location not found"`
+    
+* **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/information/nw_england`
+
+### Forecast carbon intensity status for entire nation over a given time period
+#### Given a time window from now until T<=47.5 hours later, returns average carbon intensity level at half hour intervals along with a status with values within [very low, low, moderate, high, very high]
+
+* **URL:** `/forecast/<hours>`
+
+* **Method:** `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `[{"time":ISO_8601_timestamp,"forecast":CI_Level,"index":Status_tag}]`
+    
+* **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/forecast/5`
+
+
+### Forecast carbon intensity status for a specified region
+#### Given a time window from now until T<=47.5 hours later, returns regional carbon intensity level at half hour intervals along with a status with values within [very low, low, moderate, high, very high]
+
+* **URL:** `/forecast/<location>/<hours>`
+
+* **Method:** `GET`
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{[{"time":ISO_8601_timestamp,"forecast":CI_Level,"index":Status_tag}]`
+    
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `"Location not found"`
+    
+* **Sample Call:** `curl http://test.mist.rd.bbc.co.uk:8000/forecast/nw_england/5`
