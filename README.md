@@ -1,4 +1,4 @@
-# rd-carbon-intensity-exporter
+# Prometheus Carbon Intensity Exporter
 An API wrapper and Prometheus exporter for monitoring the GB carbon intensity API: https://carbonintensity.org.uk/
 
 ## Setup
