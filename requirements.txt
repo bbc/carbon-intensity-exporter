@@ -1,6 +1,5 @@
 aiohttp==3.9.0
 asynctest==0.13.0
-carbon_intensity_exporter==0.0.1
 prometheus-client==0.10.1
 sanic==22.6.2
 setuptools==65.5.1
